@@ -1,9 +1,9 @@
 #!/usr/bin/env zsh
 
 cat <<'EOF' >|tree.md
-# gorepotemplate
+# benchmark
 
-> This is the initial directory tree for gorepotemplate. Use the make_tree_md.sh script ([GNU-tree required][get_tree]) to update it if you wish. It is safe to delete this file.
+> This is the initial directory tree for benchmark. Use the make_tree_md.sh script ([GNU-tree required][get_tree]) to update it if you wish. It is safe to delete this file.
 
 ### Directory Structure
 
