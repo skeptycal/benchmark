@@ -1,0 +1,5 @@
+package benchmark // import "github.com/skeptycal/_small_repos/benchmark"
+
+Package benchmark contains utilities for macOS.
+
+func Example()
