@@ -9,11 +9,22 @@ root = true
 
 [*]
 # ************** defaults
-    # These are the most common defaults for developers working with the majority of code bases on a UNIX, Linux, or macOS based system.
+    # Unix-style newlines with a newline ending every file, utf-8 charset
 
-    # Windows only differs in a few small places, but they can still cause headaches: the standard end_of_line on Windows was historically CRLF. Some legacy file formats maintain this CRLF standard. on Unix, it was LF, while on a Mac you would expect CR alone. Earlier Apple platforms did not play well with others, but most modern applications convert output seemlessly to the Unix style LF endings. The most common issues now, which aren't common at all, are variations between CRLF and LF.
+    # These are the most common defaults for developers working with the
+    # majority of code bases on a UNIX, Linux, or macOS based system.
 
-    # The use of the TAB character specifically, as opposed to 'whitespace' in general, is required or will cause problems with some legacy file formats.
+    # Windows only differs in a few small places, but they can still cause
+    # headaches: the standard end_of_line on Windows was historically CRLF.
+    # Some legacy file formats maintain this CRLF standard. on Unix, it was
+    # LF, while on a Mac you would expect CR alone. Earlier Apple platforms
+    # did not play well with others, but most modern applications convert
+    # output seemlessly to the Unix style LF endings. The most common issues
+    # now, which aren't common at all, are variations between CRLF and LF.
+
+    # The use of the TAB character specifically, as opposed to 'whitespace'
+    # in general, is required or will cause problems with some legacy file
+    # formats.
 
 charset = utf-8
 end_of_line = lf
@@ -40,6 +51,7 @@ trim_trailing_whitespace = true
 indent_size = 4
 indent_style = space
 
+# PHP - Picky Habits Pervade
 [*.php]
     # Funny! ... from the PHP PSR-12 specification. The sentence explains all of the ways to express relative desire for things to be a certain way ... in great detail ... and fails to use one in the sentence! They chose to use "are to be interpreted" instead of MUST or SHALL or any other such thing.
 
@@ -78,12 +90,23 @@ indent_size = 2
 indent_style = space
 charset = utf-8
 
+# some prefer 4 ...
 [*.html]
 indent_style = space
 indent_size = 2
 
+# see https://nixos.org/nixpkgs/manual/#chap-conventions
+# Match nix/ruby/docbook files, set indent to spaces with width of two
+[*.{nix,rb,xml}]
+indent_style = space
+indent_size = 2
+
+[*.pl]
+indent_style = space
+indent_size = 4
+
 # ************** tabs
-[*.go]
+[*.go] # yeah, right ...
 # Go does it for us. So we do not have to care about it. I like this way best.
     # from https://golang.org/doc/effective_go#formatting
     # Formatting issues are the most contentious but the least consequential. People can adapt to different formatting styles but it's better if they don't have to, and less time is devoted to the topic if everyone adheres to the same style. The problem is how to approach this Utopia without a long prescriptive style guide. With Go we take an unusual approach and let the machine take care of most formatting issues.
@@ -101,7 +124,7 @@ indent_style = tab
     # makefiles *require* tabs
 indent_style = tab
 
-[{.gitattributes,.gitignore,.gitmodules}]
+[.git*]
 indent_style = tab
 
 [*.bat]

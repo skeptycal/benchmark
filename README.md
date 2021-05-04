@@ -1,10 +1,10 @@
-# gorepotemplate
+# benchmark
 
 > Tricky and fun utilities for Go programs.
 
 ---
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/skeptycal/gorepotemplate/Go) ![Codecov](https://img.shields.io/codecov/c/github/skeptycal/gorepotemplate)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/skeptycal/benchmark/Go) ![Codecov](https://img.shields.io/codecov/c/github/skeptycal/benchmark)
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](code-of-conduct.md)
 
@@ -30,16 +30,16 @@ Developed with $( go version; ). Go is _extremely_ backwards compatible and semv
 To use this repo as a template for your own project:
 
 ```sh
-gh repo create -y --public --template "https://github.com/skeptycal/gorepotemplate"
+gh repo create -y --public --template "https://github.com/skeptycal/benchmark"
 ```
 
 Clone this repo to test and contribute:
 
 ```bash
 # add repo to $GOPATH (xxxxxx is your computer login username)
-go get github.com/xxxxxx/gorepotemplate
+go get github.com/xxxxxx/benchmark
 
-cd ${GOPATH}/src/github.com/xxxxxx/gorepotemplate
+cd ${GOPATH}/src/github.com/xxxxxx/benchmark
 
 # test results and coverage info
 ./go.test.sh
@@ -55,15 +55,15 @@ Use the [Issues][issues] and [PR][pr] templates on the GitHub repo page to contr
 
 ### Basic Usage
 
-> This is a copy of the example script available in the `cmd/example/gorepotemplate` folder:
+> This is a copy of the example script available in the `cmd/example/benchmark` folder:
 
 ```go
 package main
 
-import "github.com/skeptycal/gorepotemplate"
+import "github.com/skeptycal/benchmark"
 
 func main() {
-    gorepotemplate.Example()
+    benchmark.Example()
 }
 
 ```
@@ -72,7 +72,7 @@ To try it out:
 
 ```sh
 # change to the sample folder
-cd cmd/example/gorepotemplate
+cd cmd/example/benchmark
 
 # run the main.go program
 go run ./main.go
@@ -112,5 +112,5 @@ Licensed under the MIT <https://opensource.org/licenses/MIT> - see the [LICENSE]
 [github]: (https://github.com/skeptycal)
 [campoy]: (https://github.com/campoy)
 [fatih]: (https://github.com/fatih/color)
-[issues]: (https://github.com/skeptycal/gorepotemplate/issues)
-[pr]: (https://github.com/skeptycal/gorepotemplate/pulls)
+[issues]: (https://github.com/skeptycal/benchmark/issues)
+[pr]: (https://github.com/skeptycal/benchmark/pulls)
