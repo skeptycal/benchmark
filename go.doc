@@ -1,4 +1,4 @@
-package benchmark // import "github.com/skeptycal/_small_repos/benchmark"
+package benchmark // import "github.com/skeptycal/benchmark"
 
 Package benchmark contains utilities for macOS.
 

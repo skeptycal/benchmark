@@ -15,10 +15,6 @@ var (
 	Contains = types.Contains
 )
 
-func chr(c byte) string {
-	return fmt.Sprintf("%c", c)
-}
-
 // func limitTestResultLength(v Any) string {
 // 	s := fmt.Sprintf("%v", v)
 
