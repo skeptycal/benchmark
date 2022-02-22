@@ -8,7 +8,7 @@ import (
 
 var any Inccer
 
-var RetVal = types.RetVal
+var RetVal interface{}
 
 type myint int64
 
@@ -24,23 +24,20 @@ var inccers = []Inccer{
 }
 
 type (
-	Any          = types.Any
-	Benchmark    = types.Benchmark
-	BenchmarkSet = types.BenchmarkSet
+	Any = types.Any
 )
 
 var (
-	NewBenchmark    = types.NewBenchmark
-	NewBenchmarkSet = types.NewBenchmarkSet
-	benchmarks      = []types.Benchmark{
-		types.NewBenchmark("incnAssertNoCheck", incnAssertionNoCheck, []Any{}),
-		types.NewBenchmark("incnIntmethod", incnIntmethod, []Any{}),
-		types.NewBenchmark("incnInterface", incnInterface, []Any{}),
-		types.NewBenchmark("incnSwitch", incnSwitch, []Any{}),
-		types.NewBenchmark("incnAssertion", incnAssertion, []Any{}),
-	}
 
-	bs BenchmarkSet
+// benchmarks      = []types.Benchmark{
+// 	types.NewBenchmark("incnAssertNoCheck", incnAssertionNoCheck, []Any{}),
+// 	types.NewBenchmark("incnIntmethod", incnIntmethod, []Any{}),
+// 	types.NewBenchmark("incnInterface", incnInterface, []Any{}),
+// 	types.NewBenchmark("incnSwitch", incnSwitch, []Any{}),
+// 	types.NewBenchmark("incnAssertion", incnAssertion, []Any{}),
+// }
+
+// bs BenchmarkSet
 )
 
 func BenchmarkAll(b *testing.B) {

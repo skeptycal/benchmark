@@ -1,100 +1,98 @@
 package benchmark
 
-// var defaultOptions = map[string]bool{
-// 	"can_parallel":                            true,
-// 	"use_global_return_value":                 true,
-// 	"reallocate_local_variables_within_loops": true,
+import (
+	"testing"
+)
+
+type (
+	test struct {
+		name    string
+		in      Any
+		got     Any
+		want    Any
+		wantErr bool
+	}
+
+	// Assert implements the Tester interface. It is
+	// used for boolean only challenges. In addition
+	// to working seamlessly with the standard library
+	// testing package, it can return the bool
+	// result for use in alternate data collection
+	// or CI software.
+	Assert interface {
+		Tester
+		Result() bool
+	}
+
+	// Random implements Tester and  creates a random
+	// test that can be used to generate many varied
+	// tests automatically.
+	// After each use, Regenerate() can be called to
+	// generate a new test.
+	Random interface {
+		Tester
+		Regenerate()
+	}
+
+	// Custom implements Tester and can be used to
+	// hook into existing software by passing in
+	// the various test arguments with Hook().
+	// Calling Hook() also calls Run() automaticaly.
+	Custom interface {
+		Tester
+		Hook(name string, got, want Any, wantErr bool)
+	}
+
+	assert struct {
+		name   string
+		got    Any
+		want   Any
+		assert Assert
+	}
+
+	testSet struct {
+		name string
+		t    *testing.T
+		list []test
+	}
+
+	// Tester implements an individual test. It may
+	// be implemented by traditional tests,
+	// asserts, random inputs, or custom code.
+	Tester interface {
+
+		// Run runs an individual test.
+		Run(t *testing.T)
+	}
+
+	TestRunner interface {
+
+		// Run runs all tests in the set.
+		Run()
+	}
+)
+
+func NewTestSet(t *testing.T, name string, list []test) TestRunner {
+	return &testSet{
+		t:    t,
+		name: name,
+		list: list,
+	}
+}
+
+// Run runs all tests in the set.
+func (ts *testSet) Run() {
+	for _, tt := range ts.list {
+		tt.Run(ts.t)
+	}
+}
+
+// // Reset clears the list of tests
+// func (ts *testSet) reset() {
+// 	ts.list = []test{}
 // }
 
-// // NewTestSet returns a new set of Benchmark items.
-// func NewTestSet(name string, set []Test) TestSet {
-// 	return &testSet{&testOptions{name: name, options: defaultOptions}, set}
-// }
-
-// // NewTest returns a new Benchmark item.
-// func NewTest(name string, fn func(t *testing.T)) Test {
-// 	return &test{&testOptions{name: name, options: defaultOptions}, fn}
-// }
-
-// type (
-// 	// Args []Any
-
-// 	// Test is a Test itemthat can be run with
-// 	// options applied.
-// 	Test interface {
-// 		Run(t *testing.T)
-// 		Call(args ...Any) (string, error)
-
-// 		TestOptioner
-// 	}
-
-// 	// TestSet is a collection of Test items
-// 	// that can be run with options applied.
-// 	TestSet interface {
-// 		Run(t *testing.T)
-
-// 		TestOptioner
-// 	}
-
-// 	// TestOptioner manages options for running tests.
-// 	// The default options are:
-// 	//	  defaultOptions = map[string]bool{
-// 	//	 	"can_parallel":                            true,
-// 	//	 	"use_global_return_value":                 true,
-// 	//	 	"reallocate_local_variables_within_loops": true,
-// 	//	 }
-// 	TestOptioner interface {
-// 		Name() string
-// 		GetSetter
-// 	}
-
-// 	testOptions struct {
-// 		name    string
-// 		options map[string]bool
-// 	}
-// )
-
-// func (to *testOptions) Name() string { return to.name }
-
-// func (to *testOptions) Get(key Any) (Any, error) {
-// 	if _, ok := key.(string); !ok {
-// 		return nil, fmt.Errorf("key type must be string: %v(%T)", key, key)
-// 	}
-// 	if v, ok := to.options[key.(string)]; ok {
-// 		return v, nil
-// 	}
-// 	return nil, fmt.Errorf("key not found: %v", key)
-// }
-
-// func (to *testOptions) Set(key Any, value Any) error {
-// 	if _, ok := key.(string); !ok {
-// 		return fmt.Errorf("key type must be string: %v(%T)", key, key)
-// 	}
-// 	if _, ok := value.(bool); !ok {
-// 		return fmt.Errorf("value type must be bool: %v(%T)", value, value)
-// 	}
-// 	to.options[key.(string)] = value.(bool)
-// 	return nil
-// }
-
-// // test implements Test
-// type test struct {
-// 	*testOptions
-// 	fn func(t *testing.T)
-// }
-
-// func (tst *test) Run(t *testing.T)                 { tst.fn(t) }
-// func (tst *test) Call(args ...Any) (string, error) { return "", nil }
-
-// // testSet implements TestSet
-// type testSet struct {
-// 	*testOptions
-// 	marks []Test
-// }
-
-// func (ts *testSet) Run(t *testing.T) {
-// 	for _, bb := range ts.marks {
-// 		name := fmt.Sprintf("%v - %v", ts.Name(), bb.Name())
-// 		t.Run(name, func(t *testing.T) { bb.Run(t) })
-// 	}
-// }
+// Run runs the individual test
+func (tt *test) Run(t *testing.T) {
+	tRunTest(t, tt)
+}

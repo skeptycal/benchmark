@@ -1,3 +1,5 @@
 package benchmark
 
-func Collect(path string) Benchmark
+func Collect(path string) Benchmark {
+	return nil
+}
