@@ -6,6 +6,7 @@ import (
 
 type (
 	test struct {
+		t       *testing.T
 		name    string
 		in      Any
 		got     Any
@@ -53,26 +54,19 @@ type (
 	testSet struct {
 		name string
 		t    *testing.T
-		list []test
+		list []Tester
 	}
 
-	// Tester implements an individual test. It may
-	// be implemented by traditional tests,
-	// asserts, random inputs, or custom code.
+	// Tester implements the Run method of an automated
+	// test suite. It may be implemented by traditional
+	// tests, asserts, random inputs, custom code, or
+	// sets of tests.
 	Tester interface {
-
-		// Run runs an individual test.
-		Run(t *testing.T)
-	}
-
-	TestRunner interface {
-
-		// Run runs all tests in the set.
 		Run()
 	}
 )
 
-func NewTestSet(t *testing.T, name string, list []test) TestRunner {
+func NewTestSet(t *testing.T, name string, list []Tester) Tester {
 	return &testSet{
 		t:    t,
 		name: name,
@@ -80,19 +74,25 @@ func NewTestSet(t *testing.T, name string, list []test) TestRunner {
 	}
 }
 
-// Run runs all tests in the set.
-func (ts *testSet) Run() {
-	for _, tt := range ts.list {
-		tt.Run(ts.t)
+func NewTest(t *testing.T, name string, in, got, want Any, wantErr bool) Tester {
+	return &test{
+		t:       t,
+		name:    name,
+		in:      in,
+		got:     got,
+		want:    want,
+		wantErr: wantErr,
 	}
 }
 
-// // Reset clears the list of tests
-// func (ts *testSet) reset() {
-// 	ts.list = []test{}
-// }
+// Run runs all tests in the set.
+func (ts *testSet) Run() {
+	for _, tt := range ts.list {
+		tt.Run()
+	}
+}
 
 // Run runs the individual test
-func (tt *test) Run(t *testing.T) {
-	tRunTest(t, tt)
+func (tt *test) Run() {
+	TRunTest(tt.t, tt)
 }

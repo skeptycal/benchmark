@@ -1,13 +1,8 @@
-// Copyright (c) 2021 Michael Treanor
-// https://github.com/skeptycal
-// MIT License
-
-// Package benchmark contains utilities for macOS.
 package benchmark
 
 import (
 	"fmt"
-	"strings"
+	"reflect"
 	"testing"
 
 	"github.com/skeptycal/types"
@@ -19,137 +14,91 @@ const (
 	maxScalingFactor        = 10
 )
 
-type (
-	AnyValue = types.AnyValue
-
-	pooler interface {
-		Get() *strings.Builder
-		Release(sb *strings.Builder)
-	}
-
-	swimmer struct{ strings.Builder }
-)
-
-func (t swimmer) Get() *strings.Builder {
-	return new(strings.Builder)
-}
-
-func (t swimmer) Release(sb *strings.Builder) {
-	t.Reset()
-}
-
-func sbNonPool() pooler {
-	return &swimmer{}
-}
-
 var (
-// sb *strings.Builder = &strings.Builder{}
-// NewPool                     = New()
-// out        string = "" // global string return value
-// global_n   int    = 0
-// global_err error  = nil
-// k          byte
+	ValueOf = types.ValueOf
 )
 
 type (
 	Any = types.Any
 
+	AnyValue = types.AnyValue
+
 	GetSetter interface {
 		Get(key Any) (Any, error)
 		Set(key Any, value Any) error
 	}
-
-	// Args implements a map of arguments
-	Args interface {
-		GetSetter
-	}
-
-	args map[Any]Any
-
-	ArgSet []Args
-
-	// Benchmark interface{}
-
-	Benchmarks interface {
-		Name() string
-		Scale() int
-		Count() int
-		Next() Benchmark
-		Setup() setupFunc
-		Cleanup() cleanupFunc
-	}
-
-	benchmark2 struct {
-		name    string   // name of benchmark test
-		argSets []ArgSet // multiple runs with multiple argSets
-		want    Any      // return value wanted
-		wantErr bool     // is error wanted?
-	}
-
-	benchmarkSet2 struct {
-		name          string      // name of benchmark set
-		scale         int         // current scaling factor
-		counter       int         // current trial counter
-		runs          []benchmark // multiple runs if multiple Arg sets
-		scalingFactor int         // max scaling factor for benchmark set (1-10)
-		setup         setupFunc   // function used to setup benchmarks
-		cleanup       cleanupFunc // function used to cleanup benchmarks
-	}
-
-	setupFunc   = func(set *benchmarkSet) error
-	cleanupFunc = func(set *benchmarkSet) error
 )
 
-func NewBenchmarkSet2(name string, tests []benchmark, scalingFactor int, setup setupFunc, cleanup cleanupFunc) *benchmarkSet2 {
-	if scalingFactor < 1 || scalingFactor > maxScalingFactor {
-		scalingFactor = defaultMaxScalingFactor
-	}
-
-	if setup == nil {
-		setup = defaultSetup
-	}
-
-	if cleanup == nil {
-		cleanup = defaultCleanup
-	}
-	return &benchmarkSet2{
-		name:          name,
-		scale:         0,
-		counter:       0,
-		runs:          tests,
-		scalingFactor: scalingFactor,
-		setup:         setup,
-		cleanup:       cleanup,
-	}
+// NewBenchmarkSet returns a new set of Benchmark items.
+func NewBenchmarkSet(b *testing.B, name string, set []Benchmark) BenchmarkSet {
+	return &benchmarkSet{name: name, set: set}
 }
 
-func BenchmarkAll(b *testing.B) {
-	benchmarks := benchmarkSet2{
-		name:          "",
-		scale:         0,
-		counter:       0,
-		runs:          []benchmark{},
-		scalingFactor: defaultMaxScalingFactor,
-		setup:         func(set *benchmarkSet) error { return nil },
-		cleanup:       func(set *benchmarkSet) error { return nil },
-	}
+type BmFunc = func(b *testing.B) []reflect.Value
+type ReFunc = func(in []reflect.Value) []reflect.Value
 
-	for _, bb := range benchmarks.runs {
-		for i := 0; i < b.N; i++ {
-			fmt.Println(bb.name)
+func BenchmarkFunc(fn ReFunc, args []reflect.Value) BmFunc {
+	if len(args) < 1 {
+		return func(b *testing.B) []reflect.Value {
+			return fn([]reflect.Value{ValueOf(b)})
 		}
 	}
-
+	return func(b *testing.B) []reflect.Value {
+		return fn(args)
+	}
 }
 
-func defaultSetup(set *benchmarkSet) error {
+// NewBenchmark returns a new Benchmark item.
+func NewBenchmark(name string, fn Any, args []Any) Benchmark {
 
-	// set any global variables here
-	// pass configuration options using default _config
+	in := make([]reflect.Value, 0, len(args))
+	for _, arg := range args {
+		in = append(in, reflect.ValueOf(arg))
+	}
 
+	if v := reflect.ValueOf(fn); v.Kind() == reflect.Func {
+		return &benchmark{name: name, fn: BenchmarkFunc(v.Call, in)}
+	}
 	return nil
 }
 
-func defaultCleanup(set *benchmarkSet) error {
-	return nil
+type (
+	Benchmark interface {
+		Name() string
+		Run(b *testing.B)
+	}
+
+	// BenchmarkSet is a collection of Benchmark items
+	// that can be run with options applied.
+	BenchmarkSet interface {
+		Name() string
+		Run(b *testing.B)
+	}
+
+	// benchmark implements Benchmark
+	benchmark struct {
+		name string
+		fn   Any // func(b *testing.B)
+		args []reflect.Value
+	}
+
+	// benchmarkSet implements BenchmarkSet
+	benchmarkSet struct {
+		name string
+		set  []Benchmark
+	}
+)
+
+func (bs *benchmarkSet) Run(b *testing.B) {
+	for _, bb := range bs.set {
+		name := fmt.Sprintf("%v - %v", bs.Name(), bb.Name())
+		b.Run(name, func(b *testing.B) { bb.Run(b) })
+	}
 }
+func (bm *benchmark) Run(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = bm.fn.(BmFunc)(b)
+	}
+}
+func (bs *benchmarkSet) Name() string { return bs.name }
+func (bm *benchmark) Name() string    { return bm.name }
